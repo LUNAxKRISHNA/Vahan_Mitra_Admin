@@ -1,4 +1,3 @@
-import { Bus, Users, Route, GitBranch, Zap, Bell, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import StatCard from '../components/ui/StatCard';
@@ -10,23 +9,23 @@ import RouteTrafficChart from '../components/charts/RouteTrafficChart';
 import { mockDashboardStats } from '../data/mockData';
 
 const QUICK_ACTIONS = [
-  { label: 'Add Driver',      path: '/drivers',       color: 'btn-primary'  },
-  { label: 'Add Bus',         path: '/buses',         color: 'btn-secondary'},
-  { label: 'Add Route',       path: '/routes',        color: 'btn-outline'  },
-  { label: 'Send Alert',      path: '/notifications', color: 'btn-outline'  },
+  { label: 'Add Driver', path: '/drivers', color: 'btn-primary' },
+  { label: 'Add Bus', path: '/buses', color: 'btn-secondary' },
+  { label: 'Add Route', path: '/routes', color: 'btn-outline' },
+  { label: 'Send Alert', path: '/notifications', color: 'btn-outline' },
 ];
 
 export default function Dashboard() {
   const { state } = useApp();
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
 
   const stats = [
-    { title: 'Total Buses',     value: mockDashboardStats.totalBuses,    icon: Bus,        accent: 'stat-navy',   trend: 5,  subtitle: `${mockDashboardStats.activeBuses} currently active`, delay: 0 },
-    { title: 'Active Buses',    value: mockDashboardStats.activeBuses,   icon: Zap,        accent: 'stat-teal',   trend: 8,  subtitle: 'On road right now',                                  delay: 0.05 },
-    { title: 'Total Drivers',   value: mockDashboardStats.totalDrivers,  icon: Users,      accent: 'stat-indigo', trend: 2,  subtitle: `${state.drivers.filter(d => d.status === 'Active').length} active today`, delay: 0.1 },
-    { title: 'Routes',          value: mockDashboardStats.assignedRoutes,icon: Route,      accent: 'stat-cyan',   trend: 0,  subtitle: 'Operational routes',                                 delay: 0.15 },
-    { title: 'Trips Today',     value: mockDashboardStats.tripsToday,    icon: GitBranch,  accent: 'stat-amber',  trend: 12, subtitle: 'Completed + ongoing',                                delay: 0.2 },
-    { title: 'Notifications',   value: mockDashboardStats.notifications, icon: Bell,       accent: 'stat-rose',   trend: -3, subtitle: 'Sent this week',                                     delay: 0.25 },
+    { title: 'Total Buses', value: mockDashboardStats.totalBuses, accent: 'stat-navy', subtitle: `${mockDashboardStats.activeBuses} currently active`, delay: 0 },
+    { title: 'Active Buses', value: mockDashboardStats.activeBuses, accent: 'stat-teal', subtitle: 'On road right now', delay: 0.05 },
+    { title: 'Total Drivers', value: mockDashboardStats.totalDrivers, accent: 'stat-indigo', subtitle: `${state.drivers.filter(d => d.status === 'Active').length} active today`, delay: 0.1 },
+    { title: 'Routes', value: mockDashboardStats.assignedRoutes, accent: 'stat-cyan', subtitle: 'Operational routes', delay: 0.15 },
+    { title: 'Trips Today', value: mockDashboardStats.tripsToday, accent: 'stat-amber', subtitle: 'Completed + ongoing', delay: 0.2 },
+    { title: 'Notifications', value: mockDashboardStats.notifications, accent: 'stat-rose', subtitle: 'Sent this week', delay: 0.25 },
   ];
 
   return (
@@ -34,7 +33,7 @@ export default function Dashboard() {
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-navy-900">Good morning, Kiran! 👋</h1>
+          <h1 className="text-navy-900">Good morning, Admin! 👋</h1>
           <p className="text-sm text-slate-500 mt-1">Here's what's happening with your fleet today.</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -82,7 +81,7 @@ export default function Dashboard() {
             <p className="text-xs text-slate-500 mt-0.5">Trips and passenger load per route</p>
           </div>
           <button onClick={() => navigate('/routes')} className="btn-ghost text-xs">
-            View Routes <ArrowRight size={13} />
+            View Routes
           </button>
         </div>
         <RouteTrafficChart />
@@ -95,7 +94,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-navy-900">Recent Activity</h3>
             <button onClick={() => navigate('/activity-logs')} className="btn-ghost text-xs">
-              View All <ArrowRight size={13} />
+              View All
             </button>
           </div>
           <ActivityTimeline logs={state.activityLogs} limit={5} />
@@ -106,7 +105,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-navy-900">Recent Notifications</h3>
             <button onClick={() => navigate('/notifications')} className="btn-ghost text-xs">
-              View All <ArrowRight size={13} />
+              View All
             </button>
           </div>
           <div className="space-y-3">
@@ -119,3 +118,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

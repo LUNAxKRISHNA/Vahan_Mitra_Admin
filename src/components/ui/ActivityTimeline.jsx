@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
-import { PlusCircle, Edit2, Trash2, CheckCircle, Bell, Route, Bus } from 'lucide-react';
 import clsx from 'clsx';
 
 const TYPE_CONFIG = {
-  create: { icon: PlusCircle,  bg: 'bg-emerald-100', text: 'text-emerald-600' },
-  update: { icon: Edit2,       bg: 'bg-blue-100',    text: 'text-blue-600'    },
-  delete: { icon: Trash2,      bg: 'bg-red-100',     text: 'text-red-600'     },
-  notify: { icon: Bell,        bg: 'bg-amber-100',   text: 'text-amber-600'   },
-  route:  { icon: Route,       bg: 'bg-teal-100',    text: 'text-teal-600'    },
-  bus:    { icon: Bus,         bg: 'bg-navy-100',    text: 'text-navy-600'    },
+  create: { bg: 'bg-emerald-100', text: 'text-emerald-600' },
+  update: { bg: 'bg-blue-100', text: 'text-blue-600' },
+  delete: { bg: 'bg-red-100', text: 'text-red-600' },
+  notify: { bg: 'bg-amber-100', text: 'text-amber-600' },
+  route: { bg: 'bg-teal-100', text: 'text-teal-600' },
+  bus: { bg: 'bg-navy-100', text: 'text-navy-600' },
 };
 
 function fmtTime(iso) {
@@ -28,7 +27,6 @@ export default function ActivityTimeline({ logs = [], limit }) {
       <div className="space-y-4">
         {items.map((log, i) => {
           const cfg = TYPE_CONFIG[log.type] || TYPE_CONFIG.update;
-          const Icon = cfg.icon;
           return (
             <motion.div
               key={log.id}
@@ -37,9 +35,9 @@ export default function ActivityTimeline({ logs = [], limit }) {
               transition={{ delay: i * 0.04 }}
               className="relative flex items-start gap-4 pl-2"
             >
-              {/* Icon dot */}
+              {/* Dot indicator */}
               <div className={clsx('relative z-10 w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5', cfg.bg)}>
-                <Icon size={13} className={cfg.text} />
+                <div className={clsx('w-2 h-2 rounded-full', cfg.text.replace('text-', 'bg-'))} />
               </div>
 
               {/* Content */}
@@ -58,3 +56,4 @@ export default function ActivityTimeline({ logs = [], limit }) {
     </div>
   );
 }
+

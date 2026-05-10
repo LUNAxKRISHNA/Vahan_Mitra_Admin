@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
@@ -21,7 +20,7 @@ function useCounter(end, duration = 1200) {
 
 // ─── StatCard ─────────────────────────────────────────────────────────────────
 // Props: title, value, icon, accent, trend (+N%), subtitle
-export default function StatCard({ title, value, icon: Icon, accent = 'stat-navy', trend, subtitle, delay = 0 }) {
+export default function StatCard({ title, value, icon: Icon, accent = 'stat-navy', subtitle, delay = 0 }) {
   const count = useCounter(typeof value === 'number' ? value : 0);
 
   return (
@@ -39,20 +38,14 @@ export default function StatCard({ title, value, icon: Icon, accent = 'stat-navy
           </p>
           {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
         </div>
-        <div className={clsx('w-12 h-12 rounded-2xl flex items-center justify-center shadow-md', accent)}>
-          {Icon && <Icon size={22} className="text-white" />}
-        </div>
-      </div>
+        {Icon && (
+          <div className={clsx('w-12 h-12 rounded-2xl flex items-center justify-center shadow-md', accent)}>
+            <Icon size={22} className="text-white" />
+          </div>
+        )}
 
-      {trend !== undefined && (
-        <div className={clsx(
-          'flex items-center gap-1.5 text-xs font-semibold',
-          trend > 0 ? 'text-emerald-600' : trend < 0 ? 'text-red-500' : 'text-slate-500',
-        )}>
-          {trend > 0 ? <TrendingUp size={13} /> : trend < 0 ? <TrendingDown size={13} /> : <Minus size={13} />}
-          <span>{trend > 0 ? '+' : ''}{trend}% from last week</span>
-        </div>
-      )}
+      </div>
     </motion.div>
   );
 }
+
