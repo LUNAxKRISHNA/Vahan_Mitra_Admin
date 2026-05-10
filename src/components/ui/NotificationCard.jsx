@@ -1,11 +1,10 @@
-import { Bell, AlertTriangle, Info } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import clsx from 'clsx';
 
 const TYPE_ICON = {
-  Emergency: { icon: AlertTriangle, bg: 'bg-red-100',   text: 'text-red-600'   },
-  Alert:     { icon: Bell,          bg: 'bg-amber-100', text: 'text-amber-600' },
-  Info:      { icon: Info,          bg: 'bg-teal-100',  text: 'text-teal-600'  },
+  Emergency: { bg: 'bg-red-100',   text: 'text-red-600'   },
+  Alert:     { bg: 'bg-amber-100', text: 'text-amber-600' },
+  Info:      { bg: 'bg-teal-100',  text: 'text-teal-600'  },
 };
 
 function fmtDate(iso) {
@@ -14,11 +13,10 @@ function fmtDate(iso) {
 
 export default function NotificationCard({ notif }) {
   const cfg  = TYPE_ICON[notif.type] || TYPE_ICON.Info;
-  const Icon = cfg.icon;
   return (
     <div className="glass-card-hover p-4 flex gap-4 items-start">
       <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center shrink-0', cfg.bg)}>
-        <Icon size={16} className={cfg.text} />
+        <div className={clsx('w-2.5 h-2.5 rounded-full', cfg.text.replace('text-', 'bg-'))} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
@@ -40,3 +38,4 @@ export default function NotificationCard({ notif }) {
     </div>
   );
 }
+
