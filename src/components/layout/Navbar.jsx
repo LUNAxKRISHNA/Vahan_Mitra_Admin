@@ -13,7 +13,6 @@ const BREADCRUMBS = {
   '/routes/':       ['Routes', 'Route Details'],
   '/assignments':   ['Assignments'],
   '/notifications': ['Notifications'],
-  '/activity-logs': ['Activity Logs'],
   '/profile':       ['Admin Profile'],
   '/settings':      ['Settings'],
 };
@@ -60,31 +59,6 @@ export default function Navbar() {
 
       {/* ── Spacer ─────────────────────────────────────────────────── */}
       <div className="flex-1" />
-
-      {/* ── Search ─────────────────────────────────────────────────── */}
-      <div className="relative hidden md:flex items-center">
-        <Search size={15} className="absolute left-3 text-slate-400 pointer-events-none" />
-        <input
-          type="text"
-          placeholder="Search anything…"
-          value={searchVal}
-          onChange={e => setSearchVal(e.target.value)}
-          className="w-56 pl-9 pr-8 py-2 text-sm rounded-xl border border-slate-200 bg-slate-50
-                     focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-500 focus:bg-white
-                     placeholder:text-slate-400 transition-all duration-150"
-        />
-        {searchVal && (
-          <button onClick={() => setSearchVal('')} className="absolute right-2.5 text-slate-400 hover:text-navy-600">
-            <X size={13} />
-          </button>
-        )}
-      </div>
-
-      {/* ── Live Status ────────────────────────────────────────────── */}
-      <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-700">
-        <span className="live-dot" />
-        System Live
-      </div>
 
       {/* ── Notification Bell ──────────────────────────────────────── */}
       <div className="relative" ref={notifRef}>

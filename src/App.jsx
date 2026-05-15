@@ -10,7 +10,6 @@ import RoutesPage    from './pages/Routes';
 import RouteDetails  from './pages/RouteDetails';
 import Assignments   from './pages/Assignments';
 import Notifications from './pages/Notifications';
-import ActivityLogs  from './pages/ActivityLogs';
 import Profile       from './pages/Profile';
 import Settings      from './pages/Settings';
 
@@ -28,7 +27,6 @@ export default function App() {
             <Route path="routes/:id" element={<RouteDetails />} />
             <Route path="assignments"   element={<Assignments />}   />
             <Route path="notifications" element={<Notifications />} />
-            <Route path="activity-logs" element={<ActivityLogs />}  />
             <Route path="profile"    element={<Profile />}     />
             <Route path="settings"   element={<Settings />}    />
             {/* Fallback */}

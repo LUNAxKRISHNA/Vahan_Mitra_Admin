@@ -1,146 +1,84 @@
-import { createContext, useContext, useReducer } from 'react';
-import {
-  mockDrivers, mockBuses, mockRoutes, mockAssignments,
-  mockNotifications, mockActivityLogs,
-} from '../data/mockData';
+import { createContext, useContext, useReducer, useEffect } from 'react';
+import { supabase } from '../utils/supabase';
+import { busAPI, driverAPI, routeAPI, assignmentAPI } from '../services/api';
 
 // ─── Initial State ────────────────────────────────────────────────────────────
 const initialState = {
-  drivers:       mockDrivers,
-  buses:         mockBuses,
-  routes:        mockRoutes,
-  assignments:   mockAssignments,
-  notifications: mockNotifications,
-  activityLogs:  mockActivityLogs,
-  sidebarOpen:   true,
+  buses: [],
+  drivers: [],
+  routes: [],
+  assignments: [],
+  notifications: [], // Keeping mock for now as requested
+  sidebarOpen: true,
+  loading: {
+    initial: true,
+    buses: false,
+    drivers: false,
+    routes: false,
+    assignments: false,
+  },
+  error: null,
 };
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 function appReducer(state, action) {
-  const addLog = (action, description) => ({
-    id: `L${Date.now()}`,
-    action, description,
-    user: 'Admin',
-    timestamp: new Date().toISOString(),
-    type: action.toLowerCase().includes('add') || action.toLowerCase().includes('creat') ? 'create'
-        : action.toLowerCase().includes('delete') || action.toLowerCase().includes('remov') ? 'delete'
-        : action.toLowerCase().includes('notif') ? 'notify' : 'update',
-  });
+
 
   switch (action.type) {
-    // ── Sidebar ──────────────────────────────────────────────────────────────
+    case 'SET_LOADING':
+      return { ...state, loading: { ...state.loading, ...action.payload } };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
     case 'TOGGLE_SIDEBAR':
       return { ...state, sidebarOpen: !state.sidebarOpen };
     case 'SET_SIDEBAR':
       return { ...state, sidebarOpen: action.payload };
 
-    // ── Drivers ──────────────────────────────────────────────────────────────
-    case 'ADD_DRIVER': {
-      const newDriver = { ...action.payload, id: `D${String(state.drivers.length + 1).padStart(3,'0')}`, trips: 0 };
-      return {
-        ...state,
-        drivers: [...state.drivers, newDriver],
-        activityLogs: [addLog('Driver Added', `New driver ${newDriver.name} (${newDriver.id}) added.`), ...state.activityLogs],
-      };
-    }
-    case 'UPDATE_DRIVER': {
-      return {
-        ...state,
-        drivers: state.drivers.map(d => d.id === action.payload.id ? { ...d, ...action.payload } : d),
-        activityLogs: [addLog('Driver Updated', `Driver ${action.payload.name} (${action.payload.id}) updated.`), ...state.activityLogs],
-      };
-    }
-    case 'DELETE_DRIVER': {
-      const driver = state.drivers.find(d => d.id === action.payload);
-      return {
-        ...state,
-        drivers: state.drivers.filter(d => d.id !== action.payload),
-        activityLogs: [addLog('Driver Deleted', `Driver ${driver?.name} (${action.payload}) removed.`), ...state.activityLogs],
-      };
-    }
+    // ── Global Data Setters (Initial Load & Realtime Sync) ─────────────────
+    case 'SET_BUSES':
+      return { ...state, buses: action.payload };
+    case 'SET_DRIVERS':
+      return { ...state, drivers: action.payload };
+    case 'SET_ROUTES':
+      return { ...state, routes: action.payload };
+    case 'SET_ASSIGNMENTS':
+      return { ...state, assignments: action.payload };
 
-    // ── Buses ────────────────────────────────────────────────────────────────
-    case 'ADD_BUS': {
-      const newBus = { ...action.payload, id: `BUS-${100 + state.buses.length + 1}` };
+    // ── Optimistic Updates (Buses) ──────────────────────────────────────────
+    case 'ADD_BUS_OPTIMISTIC':
       return {
         ...state,
-        buses: [...state.buses, newBus],
-        activityLogs: [addLog('Bus Added', `New bus ${newBus.id} registered.`), ...state.activityLogs],
+        buses: [...state.buses, action.payload],
       };
-    }
-    case 'UPDATE_BUS': {
+    case 'UPDATE_BUS_OPTIMISTIC':
       return {
         ...state,
         buses: state.buses.map(b => b.id === action.payload.id ? { ...b, ...action.payload } : b),
-        activityLogs: [addLog('Bus Updated', `Bus ${action.payload.id} details updated.`), ...state.activityLogs],
       };
-    }
-    case 'DELETE_BUS': {
+    case 'DELETE_BUS_OPTIMISTIC':
       return {
         ...state,
         buses: state.buses.filter(b => b.id !== action.payload),
-        activityLogs: [addLog('Bus Deleted', `Bus ${action.payload} removed from system.`), ...state.activityLogs],
       };
-    }
 
-    // ── Routes ───────────────────────────────────────────────────────────────
-    case 'ADD_ROUTE': {
-      const newRoute = { ...action.payload, id: `R${String(state.routes.length + 1).padStart(3,'0')}`, totalTrips: 0, activePassengers: 0, stops: action.payload.stops || [] };
+    // ── Optimistic Updates (Drivers) ────────────────────────────────────────
+    case 'ADD_DRIVER_OPTIMISTIC':
       return {
         ...state,
-        routes: [...state.routes, newRoute],
-        activityLogs: [addLog('Route Added', `New route ${newRoute.name} created.`), ...state.activityLogs],
+        drivers: [...state.drivers, action.payload],
       };
-    }
-    case 'UPDATE_ROUTE': {
+    case 'UPDATE_DRIVER_OPTIMISTIC':
       return {
         ...state,
-        routes: state.routes.map(r => r.id === action.payload.id ? { ...r, ...action.payload } : r),
-        activityLogs: [addLog('Route Updated', `Route ${action.payload.name} modified.`), ...state.activityLogs],
+        drivers: state.drivers.map(d => d.id === action.payload.id ? { ...d, ...action.payload } : d),
       };
-    }
-    case 'DELETE_ROUTE': {
-      const route = state.routes.find(r => r.id === action.payload);
+    case 'DELETE_DRIVER_OPTIMISTIC':
       return {
         ...state,
-        routes: state.routes.filter(r => r.id !== action.payload),
-        activityLogs: [addLog('Route Deleted', `Route ${route?.name} removed.`), ...state.activityLogs],
+        drivers: state.drivers.filter(d => d.id !== action.payload),
       };
-    }
 
-    // ── Assignments ──────────────────────────────────────────────────────────
-    case 'ADD_ASSIGNMENT': {
-      const newAssign = { ...action.payload, id: `A${String(state.assignments.length + 1).padStart(3,'0')}` };
-      return {
-        ...state,
-        assignments: [...state.assignments, newAssign],
-        activityLogs: [addLog('Assignment Created', `Assignment ${newAssign.id}: Driver ${newAssign.driverId} → ${newAssign.busId} → ${newAssign.routeId}.`), ...state.activityLogs],
-      };
-    }
-    case 'DELETE_ASSIGNMENT': {
-      return {
-        ...state,
-        assignments: state.assignments.filter(a => a.id !== action.payload),
-        activityLogs: [addLog('Assignment Removed', `Assignment ${action.payload} removed.`), ...state.activityLogs],
-      };
-    }
-
-    // ── Notifications ────────────────────────────────────────────────────────
-    case 'SEND_NOTIFICATION': {
-      const newNotif = {
-        ...action.payload,
-        id: `N${String(state.notifications.length + 1).padStart(3,'0')}`,
-        sentAt: new Date().toISOString(),
-        sentBy: 'Admin',
-        status: 'Delivered',
-        recipients: Math.floor(Math.random() * 800) + 100,
-      };
-      return {
-        ...state,
-        notifications: [newNotif, ...state.notifications],
-        activityLogs: [addLog('Notification Sent', `"${newNotif.title}" sent to ${newNotif.target}.`), ...state.activityLogs],
-      };
-    }
+    // Add similar optimistic actions for Routes and Assignments as needed...
 
     default:
       return state;
@@ -152,6 +90,79 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+
+  // Initial Data Fetch
+  useEffect(() => {
+    async function loadInitialData() {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: { initial: true } });
+        
+        const [buses, drivers, routes, assignments] = await Promise.all([
+          busAPI.getAll(),
+          driverAPI.getAll(),
+          routeAPI.getAllWithStops(),
+          assignmentAPI.getAll()
+        ]);
+
+        console.log("Supabase Data Loaded:", { buses, drivers, routes, assignments });
+
+        dispatch({ type: 'SET_BUSES', payload: buses || [] });
+        dispatch({ type: 'SET_DRIVERS', payload: drivers || [] });
+        dispatch({ type: 'SET_ROUTES', payload: routes || [] });
+        dispatch({ type: 'SET_ASSIGNMENTS', payload: assignments || [] });
+        
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+        dispatch({ type: 'SET_ERROR', payload: err.message });
+      } finally {
+        dispatch({ type: 'SET_LOADING', payload: { initial: false } });
+      }
+    }
+
+    loadInitialData();
+
+    // Set up Realtime Subscriptions
+    const busesSubscription = supabase.channel('public:buses')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'buses' }, async () => {
+        // Simple approach: re-fetch on any change to ensure consistency
+        const newBuses = await busAPI.getAll();
+        dispatch({ type: 'SET_BUSES', payload: newBuses });
+      }).subscribe();
+
+    const driversSubscription = supabase.channel('public:drivers')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'drivers' }, async () => {
+        const newDrivers = await driverAPI.getAll();
+        dispatch({ type: 'SET_DRIVERS', payload: newDrivers });
+      }).subscribe();
+      
+    const routesSubscription = supabase.channel('public:routes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'routes' }, async () => {
+        const newRoutes = await routeAPI.getAllWithStops();
+        dispatch({ type: 'SET_ROUTES', payload: newRoutes });
+      }).subscribe();
+
+    const assignmentsSubscription = supabase.channel('public:assignments')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assignments' }, async () => {
+        const newAssignments = await assignmentAPI.getAll();
+        dispatch({ type: 'SET_ASSIGNMENTS', payload: newAssignments });
+      }).subscribe();
+
+    const stopsSubscription = supabase.channel('public:route_stops')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'route_stops' }, async () => {
+        // When any stop changes, re-fetch all routes to update the joined data
+        const newRoutes = await routeAPI.getAllWithStops();
+        dispatch({ type: 'SET_ROUTES', payload: newRoutes });
+      }).subscribe();
+
+    return () => {
+      supabase.removeChannel(busesSubscription);
+      supabase.removeChannel(driversSubscription);
+      supabase.removeChannel(routesSubscription);
+      supabase.removeChannel(assignmentsSubscription);
+      supabase.removeChannel(stopsSubscription);
+    };
+  }, []);
+
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}

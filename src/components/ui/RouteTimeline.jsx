@@ -2,6 +2,10 @@ import clsx from 'clsx';
 import { MapPin } from 'lucide-react';
 
 export default function RouteTimeline({ stops = [] }) {
+  if (!stops || stops.length === 0) {
+    return <p className="text-slate-500 text-sm italic">No stops defined for this route.</p>;
+  }
+
   return (
     <div className="relative">
       {/* vertical line */}
@@ -24,22 +28,23 @@ export default function RouteTimeline({ stops = [] }) {
               </div>
 
               {/* Label */}
-              <div className="flex-1 pt-0.5">
+              <div className="flex-1 pt-0.5 min-w-0">
                 <p className={clsx(
-                  'text-sm font-semibold leading-tight',
+                  'text-sm font-semibold leading-tight truncate',
                   isFirst || isLast ? 'text-navy-900' : 'text-navy-700',
                 )}>
-                  {stop.name}
+                  {stop.stop_name}
                 </p>
-                {stop.time && (
-                  <p className="text-xs text-slate-500 mt-0.5">{stop.time}</p>
-                )}
+                <div className="flex flex-wrap gap-2 text-xs text-slate-500 mt-0.5">
+                  {stop.arrival_time && <span>Time: {stop.arrival_time}</span>}
+                  {(stop.lat || stop.long) && <span>Loc: {stop.lat}, {stop.long}</span>}
+                </div>
                 <span className={clsx(
                   'inline-block mt-1 text-xs font-medium px-2 py-0.5 rounded-full',
                   isFirst ? 'bg-navy-100 text-navy-700' :
                   isLast  ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-500',
                 )}>
-                  {isFirst ? 'Origin' : isLast ? 'Destination' : 'Stop'}
+                  {isFirst ? 'Origin' : isLast ? 'Destination' : `Stop ${stop.stop_order}`}
                 </span>
               </div>
             </div>

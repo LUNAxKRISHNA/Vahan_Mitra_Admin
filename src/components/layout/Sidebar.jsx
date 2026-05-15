@@ -2,8 +2,8 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, Bus, MapPin, Route,
-  GitBranch, Bell, Activity, UserCircle, Settings,
-  ChevronLeft, ChevronRight, Zap,
+  GitBranch, Bell, UserCircle, Settings,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import clsx from 'clsx';
@@ -15,7 +15,6 @@ const NAV_ITEMS = [
   { to: '/routes',        icon: Route,           label: 'Routes'       },
   { to: '/assignments',   icon: GitBranch,       label: 'Assignments'  },
   { to: '/notifications', icon: Bell,            label: 'Notifications'},
-  { to: '/activity-logs', icon: Activity,        label: 'Activity Logs'},
   { to: '/profile',       icon: UserCircle,      label: 'Admin Profile'},
   { to: '/settings',      icon: Settings,        label: 'Settings'     },
 ];
@@ -31,12 +30,12 @@ export default function Sidebar() {
     <motion.aside
       animate={{ width: open ? 256 : 72 }}
       transition={{ duration: 0.25, ease: 'easeInOut' }}
-      className="relative h-screen flex flex-col bg-navy-900 text-white overflow-hidden shrink-0 z-30"
+      className="relative h-screen flex flex-col bg-navy-900 text-white shrink-0 z-30"
     >
       {/* ── Brand ─────────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-navy-700 overflow-hidden">
-        <div className="w-9 h-9 rounded-xl bg-gradient-teal flex items-center justify-center shrink-0 shadow-lg">
-          <Zap size={18} className="text-white" />
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
+          <img src="/vahan_mitra.png" alt="Vahan Mitra" className="w-full h-full object-contain" />
         </div>
         <AnimatePresence>
           {open && (
@@ -77,7 +76,7 @@ export default function Sidebar() {
               {isActive && (
                 <motion.span
                   layoutId="activeNav"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-teal-400"
+                  className="absolute left-[-8px] inset-y-0 my-auto w-1.5 h-8 rounded-r-full bg-teal-400 shadow-[0_0_12px_rgba(45,212,191,0.4)]"
                 />
               )}
               <Icon

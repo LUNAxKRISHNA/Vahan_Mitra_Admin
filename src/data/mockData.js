@@ -60,9 +60,7 @@ export const mockNotifications = [
   { id: 'N001', title: 'Route Diversion Alert', message: 'Route R001 diverted via Domlur due to road work near Indiranagar.', target: 'Route R001', type: 'Alert', status: 'Delivered', sentAt: '2025-05-10T08:30:00', sentBy: 'Admin', recipients: 340 },
 ];
 
-// ─── ACTIVITY LOGS ───────────────────────────────────────────────────────────
-export const mockActivityLogs = [
-];
+
 
 // ─── DASHBOARD STATS ─────────────────────────────────────────────────────────
 export const mockDashboardStats = {
@@ -109,5 +107,5 @@ export const mockAdminProfile = {
   location: 'CVV Head Office',
   joinedOn: '2023-01-01',
   avatar: null,
-  access: ['Dashboard', 'Drivers', 'Buses', 'Routes', 'Assignments', 'Notifications', 'Activity Logs', 'Settings'],
+  access: ['Dashboard', 'Drivers', 'Buses', 'Routes', 'Assignments', 'Notifications', 'Settings'],
 };
