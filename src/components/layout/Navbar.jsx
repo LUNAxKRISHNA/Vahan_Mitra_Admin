@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Search, ChevronDown, UserCircle, LogOut, Settings, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { authAPI } from '../../services/auth';
 import clsx from 'clsx';
 
 // ─── Breadcrumb map ───────────────────────────────────────────────────────────
@@ -26,6 +27,15 @@ export default function Navbar() {
   const [searchVal, setSearchVal] = useState('');
   const profileRef = useRef(null);
   const notifRef   = useRef(null);
+
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -134,7 +144,10 @@ export default function Navbar() {
               <Settings size={16} /> Settings
             </button>
             <hr className="border-slate-100" />
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors">
+            <button 
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
+            >
               <LogOut size={16} /> Sign Out
             </button>
           </div>
