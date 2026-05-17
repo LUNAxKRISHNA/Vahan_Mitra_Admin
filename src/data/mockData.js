@@ -98,4 +98,14 @@ export const mockRouteTrafficData = mockRoutes.map(r => ({
   passengers: r.activePassengers,
 }));
 
-// Admin profile is now fetched from Supabase
+// ─── ADMIN PROFILE ───────────────────────────────────────────────────────────
+export const mockAdminProfile = {
+  name: 'Vahan Mitra Admin',
+  email: 'admin@vahanmitra.in',
+  phone: '9988770099',
+  role: 'Super Admin',
+  location: 'CVV Head Office',
+  joinedOn: '2023-01-01',
+  avatar: null,
+  access: ['Dashboard', 'Drivers', 'Buses', 'Routes', 'Assignments', 'Notifications', 'Settings'],
+};

@@ -121,7 +121,7 @@ export default function Settings() {
               {[
                 { label:'Application',  value:'Vahan Mitra Admin v1.0.0'  },
                 { label:'Environment',  value:'Production'                 },
-                { label:'Data Source',  value:'Supabase Database'          },
+                { label:'Data Source',  value:'Mock Data (JSON)'           },
                 { label:'Last Updated', value:new Date().toLocaleDateString('en-IN') },
               ].map(({ label, value }) => (
                 <div key={label} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0 text-sm">

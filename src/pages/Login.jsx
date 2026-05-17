@@ -26,7 +26,7 @@ const GoogleIcon = () => (
 );
 
 export default function Login() {
-  const { user, authError, clearAuthError } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -39,7 +39,6 @@ export default function Login() {
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError(null);
-    if (clearAuthError) clearAuthError();
     try {
       await authAPI.loginWithGoogle();
       //signInWithOAuth redirects the user, but in case there is a delay:
@@ -80,10 +79,10 @@ export default function Login() {
               </p>
             </div>
 
-            {(error || authError) && (
+            {error && (
               <div className="p-3.5 rounded-xl text-xs bg-red-50 border border-red-100 text-red-600 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-ping" />
-                <p className="flex-1 font-medium">{error || authError}</p>
+                <p className="flex-1 font-medium">{error}</p>
               </div>
             )}
 
