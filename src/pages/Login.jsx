@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authAPI } from '../services/auth';
-import { Bus } from 'lucide-react';
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5 mr-3 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -49,10 +48,15 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
-      {/* Background gradients for premium visual appeal */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-teal-500/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-navy-500/20 rounded-full blur-3xl" />
+    <div className="min-h-screen flex items-center justify-center bg-navy-950 relative overflow-hidden">
+      {/* High-fidelity background image */}
+      <img
+        src="/fall_bg.jpg"
+        alt="Background"
+        className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-0"
+      />
+      {/* Dark tint overlay with backdrop blur for elite legibility & contrast */}
+      <div className="absolute inset-0 bg-navy-950/40 backdrop-blur-[2px] z-0" />
 
       <div className="w-full max-w-md p-6 z-10 animate-fade-in">
         <div className="glass-card p-8 shadow-glass-lg relative overflow-hidden">
@@ -60,9 +64,13 @@ export default function Login() {
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-400 to-navy-600"></div>
 
           <div className="text-center">
-            {/* Elegant glowing emblem */}
-            <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-navy-800 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 mb-4 animate-pulse">
-              <Bus size={32} />
+            {/* Elegant brand logo directly on the card */}
+            <div className="mx-auto w-28 h-28 flex items-center justify-center mb-4">
+              <img
+                src="/vahan_mitra.png"
+                alt="Vahan Mitra"
+                className="w-full h-full object-contain drop-shadow-md"
+              />
             </div>
 
             <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-navy-900 via-navy-700 to-teal-600 mb-1">
@@ -74,8 +82,8 @@ export default function Login() {
           <div className="mt-8 space-y-6">
             <div className="bg-slate-50/60 rounded-2xl p-4 border border-slate-100/80 text-center">
               <p className="text-navy-600 text-xs leading-relaxed font-medium">
-                This administrative portal is restricted to authorized personnel. 
-                Please sign in using your registered Google Workspace credentials.
+                This administrative portal is restricted to authorized personnel.
+                Please sign in using your credentials.
               </p>
             </div>
 
