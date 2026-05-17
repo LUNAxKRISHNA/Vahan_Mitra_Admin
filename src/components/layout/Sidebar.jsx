@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
 
 const NAV_ITEMS = [
@@ -21,10 +22,18 @@ const NAV_ITEMS = [
 
 export default function Sidebar() {
   const { state, dispatch } = useApp();
+  const { adminData } = useAuth();
   const open = state.sidebarOpen;
   const location = useLocation();
 
   const toggle = () => dispatch({ type: 'TOGGLE_SIDEBAR' });
+
+  // Get dynamic admin info
+  const initials = adminData?.name
+    ? adminData.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : 'A';
+  const adminName = adminData?.name || 'Admin';
+  const adminRole = adminData?.role || 'Administrator';
 
   return (
     <motion.aside
@@ -120,7 +129,7 @@ export default function Sidebar() {
         'border-t border-navy-700 p-4 flex items-center gap-3 overflow-hidden',
       )}>
         <div className="w-8 h-8 rounded-full bg-gradient-teal flex items-center justify-center text-white text-xs font-bold shrink-0">
-          KS
+          {initials}
         </div>
         <AnimatePresence>
           {open && (
@@ -130,8 +139,8 @@ export default function Sidebar() {
               exit={{ opacity: 0 }}
               className="overflow-hidden"
             >
-              <p className="text-xs font-semibold text-white leading-none">Kiran Sharma</p>
-              <p className="text-xs text-navy-400 mt-0.5">Super Admin</p>
+              <p className="text-xs font-semibold text-white leading-none">{adminName}</p>
+              <p className="text-xs text-navy-400 mt-0.5">{adminRole}</p>
             </motion.div>
           )}
         </AnimatePresence>

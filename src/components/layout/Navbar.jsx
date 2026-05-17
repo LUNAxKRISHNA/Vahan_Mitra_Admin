@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Search, ChevronDown, UserCircle, LogOut, Settings, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/auth';
 import clsx from 'clsx';
 
@@ -20,6 +21,7 @@ const BREADCRUMBS = {
 
 export default function Navbar() {
   const { state } = useApp();
+  const { adminData } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
@@ -51,6 +53,13 @@ export default function Navbar() {
   const path = location.pathname;
   const crumbs = BREADCRUMBS[path] || BREADCRUMBS[path.replace(/\/[^/]+$/, '/')] || ['Page'];
   const unreadNotifs = state.notifications.filter(n => n.status === 'Pending').length;
+
+  // Get dynamic admin info
+  const initials = adminData?.name
+    ? adminData.name.split(' ').map(n => n[0]).join('').toUpperCase()
+    : 'A';
+  const adminName = adminData?.name || 'Admin';
+  const adminRole = adminData?.role || 'Administrator';
 
   return (
     <header className="h-16 bg-white border-b border-slate-100 flex items-center px-6 gap-4 sticky top-0 z-20 shadow-sm">
@@ -120,11 +129,11 @@ export default function Navbar() {
           className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-xl hover:bg-slate-100 transition-colors"
         >
           <div className="w-8 h-8 rounded-full bg-gradient-navy flex items-center justify-center text-white text-xs font-bold">
-            KS
+            {initials}
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-navy-900 leading-none">Kiran Sharma</p>
-            <p className="text-xs text-slate-500 mt-0.5">Super Admin</p>
+            <p className="text-xs font-semibold text-navy-900 leading-none">{adminName}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{adminRole}</p>
           </div>
           <ChevronDown size={14} className={clsx('text-slate-400 transition-transform', profileOpen && 'rotate-180')} />
         </button>

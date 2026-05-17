@@ -1,35 +1,71 @@
-import { useState } from 'react';
-import { UserCircle, Mail, Phone, MapPin, Shield, Edit2, Lock, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { UserCircle, Mail, Phone, MapPin, Shield, Edit2, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { mockAdminProfile } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../utils/supabase';
 import PageHeader from '../components/ui/PageHeader';
 import { FormInput } from '../components/ui/FormInput';
 
+const GoogleIcon = ({ className }) => (
+  <svg className={className} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
+
 export default function Profile() {
-  const [profile, setProfile] = useState(mockAdminProfile);
+  const { adminData, refreshAdminData, session } = useAuth();
+  const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [form,    setForm]    = useState({ ...mockAdminProfile });
-  const [pwForm,  setPwForm]  = useState({ current:'', next:'', confirm:'' });
-  const [pwMode,  setPwMode]  = useState(false);
+  const [form,    setForm]    = useState(null);
+  
+  const isGoogleUser = session?.user?.app_metadata?.provider === 'google';
 
-  const saveProfile = (e) => {
+  useEffect(() => {
+    if (adminData) {
+      setProfile(adminData);
+      setForm({ ...adminData });
+    }
+  }, [adminData]);
+
+  const saveProfile = async (e) => {
     e.preventDefault();
-    setProfile({ ...form });
-    setEditing(false);
-    toast.success('Profile updated');
+    try {
+      setEditing(false); // Optimistic UI state reset
+      
+      const { error } = await supabase
+        .from('admin')
+        .update({
+          name: form.name,
+          email: form.email,
+          phn_no: form.phone,
+        })
+        .eq('id', profile.id);
+
+      if (error) throw error;
+
+      await refreshAdminData();
+      toast.success('Profile updated successfully');
+    } catch (err) {
+      toast.error(err.message || 'Failed to update profile');
+      setForm({ ...profile }); // Reset on failure
+    }
   };
 
-  const changePassword = (e) => {
-    e.preventDefault();
-    if (!pwForm.current) { toast.error('Enter current password'); return; }
-    if (pwForm.next !== pwForm.confirm) { toast.error("New passwords don't match"); return; }
-    if (pwForm.next.length < 8) { toast.error('Password must be at least 8 characters'); return; }
-    toast.success('Password changed successfully');
-    setPwForm({ current:'', next:'', confirm:'' });
-    setPwMode(false);
-  };
+  if (!profile) {
+    return (
+      <div className="page-container flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-medium text-navy-500">Loading admin profile...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const INITIALS = profile.name.split(' ').map(n => n[0]).join('');
+  const INITIALS = profile.name.split(' ').map(n => n[0]).join('').toUpperCase();
 
   return (
     <div className="page-container">
@@ -114,31 +150,29 @@ export default function Profile() {
             )}
           </div>
 
-          {/* Password change */}
+          {/* Security details */}
           <div className="section-card">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h3 className="text-navy-900">Security Settings</h3>
-                <p className="text-xs text-slate-500 mt-0.5">Manage your password and account security</p>
-              </div>
-              <button onClick={() => setPwMode(v => !v)} className="btn-ghost text-xs">
-                <Lock size={13}/> {pwMode ? 'Cancel' : 'Change Password'}
-              </button>
+            <div className="mb-5">
+              <h3 className="text-navy-900">Security Settings</h3>
+              <p className="text-xs text-slate-500 mt-0.5">Manage your password and account security</p>
             </div>
 
-            {pwMode ? (
-              <form onSubmit={changePassword} className="space-y-4 max-w-sm">
-                <FormInput label="Current Password" id="pw-cur" type="password" required value={pwForm.current} onChange={e => setPwForm(p => ({ ...p, current: e.target.value }))} />
-                <FormInput label="New Password"     id="pw-new" type="password" required value={pwForm.next}    onChange={e => setPwForm(p => ({ ...p, next: e.target.value }))} />
-                <FormInput label="Confirm Password" id="pw-con" type="password" required value={pwForm.confirm} onChange={e => setPwForm(p => ({ ...p, confirm: e.target.value }))} />
-                <button type="submit" className="btn-primary">Update Password</button>
-              </form>
+            {isGoogleUser ? (
+              <div className="flex items-center gap-3.5 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm shrink-0">
+                  <GoogleIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-navy-900">Signed in with Google</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Your credentials and security settings are managed securely by Google.</p>
+                </div>
+              </div>
             ) : (
-              <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
+              <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100">
                 <CheckCircle size={18} className="text-emerald-500" />
                 <div>
                   <p className="text-sm font-semibold text-navy-900">Password is set</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Last changed on January 1, 2025</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Secured by Supabase Authentication</p>
                 </div>
               </div>
             )}
