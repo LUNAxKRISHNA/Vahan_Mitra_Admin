@@ -1,11 +1,12 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard, Users, Bus, MapPin, Route,
-  GitBranch, Bell, UserCircle, Settings,
+  LayoutDashboard, Users, Bus, Route,
+  GitBranch, Bell, UserCircle,
   ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import clsx from 'clsx';
 
 const NAV_ITEMS = [
@@ -16,11 +17,11 @@ const NAV_ITEMS = [
   { to: '/assignments',   icon: GitBranch,       label: 'Assignments'  },
   { to: '/notifications', icon: Bell,            label: 'Notifications'},
   { to: '/profile',       icon: UserCircle,      label: 'Admin Profile'},
-  { to: '/settings',      icon: Settings,        label: 'Settings'     },
 ];
 
 export default function Sidebar() {
   const { state, dispatch } = useApp();
+  const { adminProfile } = useAuth();
   const open = state.sidebarOpen;
   const location = useLocation();
 
@@ -120,7 +121,9 @@ export default function Sidebar() {
         'border-t border-navy-700 p-4 flex items-center gap-3 overflow-hidden',
       )}>
         <div className="w-8 h-8 rounded-full bg-gradient-teal flex items-center justify-center text-white text-xs font-bold shrink-0">
-          KS
+          {adminProfile
+            ? adminProfile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+            : '…'}
         </div>
         <AnimatePresence>
           {open && (
@@ -130,8 +133,8 @@ export default function Sidebar() {
               exit={{ opacity: 0 }}
               className="overflow-hidden"
             >
-              <p className="text-xs font-semibold text-white leading-none">Kiran Sharma</p>
-              <p className="text-xs text-navy-400 mt-0.5">Super Admin</p>
+              <p className="text-xs font-semibold text-white leading-none">{adminProfile?.name ?? 'Loading…'}</p>
+              <p className="text-xs text-navy-400 mt-0.5">{adminProfile?.role ?? ''}</p>
             </motion.div>
           )}
         </AnimatePresence>

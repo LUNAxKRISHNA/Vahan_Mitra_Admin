@@ -38,38 +38,43 @@ export default function AssignmentCard({ assignment, driver, bus, route, onDelet
           )}
         </div>
       </div>
-
-      {/* Flow: Driver → Bus → Route */}
-      <div className="flex items-center gap-2 text-xs">
-        {/* Driver */}
-        <div className="flex-1 flex items-center gap-2 bg-slate-50 rounded-xl p-3 border border-slate-100">
-          <User size={14} className="text-navy-500 shrink-0" />
-          <div className="min-w-0">
-            <p className="text-navy-500 text-[10px] uppercase font-bold tracking-wider">Driver</p>
-            <p className="font-bold text-navy-900 truncate">{driver?.name ?? 'Unknown'}</p>
+      {/* Flow: Driver, Bus, Route vertically stacked */}
+      <div className="space-y-3">
+        {/* Row 1: Driver */}
+        <div className="flex items-center gap-3 bg-slate-50/50 rounded-xl p-3 border border-slate-100 hover:bg-slate-50 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0 shadow-sm">
+            <User size={15} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Driver</p>
+            <p className="font-semibold text-navy-900 truncate">{driver?.name ?? 'Unknown'}</p>
           </div>
         </div>
 
-        <div className="text-slate-300 font-bold">→</div>
-
-        {/* Bus */}
-        <div className="flex-1 flex items-center gap-2 bg-slate-50 rounded-xl p-3 border border-slate-100">
-          <Bus size={14} className="text-teal-600 shrink-0" />
-          <div className="min-w-0">
-            <p className="text-teal-500 text-[10px] uppercase font-bold tracking-wider">Bus</p>
-            <p className="font-bold text-navy-900 truncate">{bus?.bus_no ?? 'Unknown'} – {bus?.name}</p>
-            <p className="text-[9px] text-slate-400 truncate">{bus?.reg_number}</p>
+        {/* Row 2: Bus */}
+        <div className="flex items-center gap-3 bg-slate-50/50 rounded-xl p-3 border border-slate-100 hover:bg-slate-50 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 shrink-0 shadow-sm">
+            <Bus size={15} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Bus</p>
+            <p className="font-semibold text-navy-900 truncate">
+              {bus?.bus_no ?? 'Unknown'} <span className="text-slate-400 font-normal">({bus?.name || 'No Name'})</span>
+            </p>
+            {bus?.reg_number && (
+              <p className="text-[9px] text-slate-400 font-medium tracking-tight mt-0.5">{bus?.reg_number}</p>
+            )}
           </div>
         </div>
 
-        <div className="text-slate-300 font-bold">→</div>
-
-        {/* Route */}
-        <div className="flex-1 flex items-center gap-2 bg-slate-50 rounded-xl p-3 border border-slate-100">
-          <Route size={14} className="text-indigo-500 shrink-0" />
-          <div className="min-w-0">
-            <p className="text-indigo-400 text-[10px] uppercase font-bold tracking-wider">Route</p>
-            <p className="font-bold text-navy-900 truncate">{route?.route_name ?? 'Unknown'}</p>
+        {/* Row 3: Route */}
+        <div className="flex items-center gap-3 bg-slate-50/50 rounded-xl p-3 border border-slate-100 hover:bg-slate-50 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0 shadow-sm">
+            <Route size={15} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Route</p>
+            <p className="font-semibold text-navy-900 truncate">{route?.route_name ?? 'Unknown'}</p>
           </div>
         </div>
       </div>

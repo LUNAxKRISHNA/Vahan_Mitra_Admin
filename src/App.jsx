@@ -14,7 +14,6 @@ import RouteDetails  from './pages/RouteDetails';
 import Assignments   from './pages/Assignments';
 import Notifications from './pages/Notifications';
 import Profile       from './pages/Profile';
-import Settings      from './pages/Settings';
 
 const ProtectedRoute = ({ children }) => {
   const { user, requiresPasswordReset } = useAuth();
@@ -50,7 +49,6 @@ export default function App() {
             <Route path="assignments"   element={<Assignments />}   />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile"    element={<Profile />}     />
-            <Route path="settings"   element={<Settings />}    />
           </Route>
 
           {/* Fallback */}

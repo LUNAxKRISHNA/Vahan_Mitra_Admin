@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, Search, ChevronDown, UserCircle, LogOut, Settings, X } from 'lucide-react';
+import { Bell, ChevronDown, UserCircle, LogOut } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../services/auth';
 import clsx from 'clsx';
 
@@ -15,16 +16,15 @@ const BREADCRUMBS = {
   '/assignments':   ['Assignments'],
   '/notifications': ['Notifications'],
   '/profile':       ['Admin Profile'],
-  '/settings':      ['Settings'],
 };
 
 export default function Navbar() {
   const { state } = useApp();
+  const { adminProfile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [searchVal, setSearchVal] = useState('');
   const profileRef = useRef(null);
   const notifRef   = useRef(null);
 
@@ -120,11 +120,13 @@ export default function Navbar() {
           className="flex items-center gap-2.5 pl-1 pr-3 py-1 rounded-xl hover:bg-slate-100 transition-colors"
         >
           <div className="w-8 h-8 rounded-full bg-gradient-navy flex items-center justify-center text-white text-xs font-bold">
-            KS
+            {adminProfile
+              ? adminProfile.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+              : '…'}
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-semibold text-navy-900 leading-none">Kiran Sharma</p>
-            <p className="text-xs text-slate-500 mt-0.5">Super Admin</p>
+            <p className="text-xs font-semibold text-navy-900 leading-none">{adminProfile?.name ?? 'Loading…'}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{adminProfile?.role ?? ''}</p>
           </div>
           <ChevronDown size={14} className={clsx('text-slate-400 transition-transform', profileOpen && 'rotate-180')} />
         </button>
@@ -136,12 +138,6 @@ export default function Navbar() {
               className="w-full flex items-center gap-3 px-4 py-3 text-sm text-navy-700 hover:bg-slate-50 transition-colors"
             >
               <UserCircle size={16} /> My Profile
-            </button>
-            <button
-              onClick={() => { navigate('/settings'); setProfileOpen(false); }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-navy-700 hover:bg-slate-50 transition-colors"
-            >
-              <Settings size={16} /> Settings
             </button>
             <hr className="border-slate-100" />
             <button 

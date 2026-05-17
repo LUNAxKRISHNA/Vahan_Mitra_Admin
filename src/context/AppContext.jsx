@@ -8,7 +8,7 @@ const initialState = {
   drivers: [],
   routes: [],
   assignments: [],
-  notifications: [], // Keeping mock for now as requested
+  notifications: [],
   sidebarOpen: true,
   loading: {
     initial: true,
